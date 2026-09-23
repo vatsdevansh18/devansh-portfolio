@@ -1,26 +1,319 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   All design decisions live here as CSS custom properties.
+   Tailwind v4 consumes these via @theme inline.
+───────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Colors ─────────────────────────────────────────────────── */
+  --color-bg:          #0a0a0a;
+  --color-bg-subtle:   #111111;
+  --color-bg-elevated: #161616;
+  --color-surface:     #1a1a1a;
+  --color-border:      #222220;
+  --color-border-subtle: #1c1c1a;
+
+  /* Text */
+  --color-text-primary:   #f0ede8;
+  --color-text-secondary: #8a8884;
+  --color-text-muted:     #555552;
+  --color-text-inverse:   #0a0a0a;
+
+  /* Accent — amber/gold */
+  --color-accent:         #d4a853;
+  --color-accent-muted:   #8a6d35;
+  --color-accent-subtle:  #1e1810;
+  --color-accent-glow:    rgba(212, 168, 83, 0.12);
+
+  /* Status */
+  --color-success:  #4a9b6f;
+  --color-warning:  #d4a853;
+  --color-error:    #c05454;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Spacing ─────────────────────────────────────────────────── */
+  --section-px:  clamp(1.25rem, 5vw, 5rem);
+  --section-py:  clamp(4rem, 10vw, 8rem);
+  --container-max: 72rem; /* 1152px */
+
+  /* ── Radii ───────────────────────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   20px;
+  --radius-pill: 999px;
+
+  /* ── Shadows ─────────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,0.6);
+  --shadow-accent: 0 0 32px rgba(212, 168, 83, 0.15);
+
+  /* ── Transitions ─────────────────────────────────────────────── */
+  --transition-fast:   150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base:   300ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow:   500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAILWIND THEME MAPPING
+───────────────────────────────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:       var(--color-bg);
+  --color-foreground:       var(--color-text-primary);
+  --color-accent:           var(--color-accent);
+  --font-sans:              var(--font-sans);
+  --font-mono:              var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100dvh;
 }
+
+/* Skip to content — accessibility */
+.skip-to-content {
+  position: fixed;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: top 0.2s;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SELECTION
+───────────────────────────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-accent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLLBAR (subtle, on-brand)
+───────────────────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent-muted); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOCUS STATES (accessibility)
+───────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLL PROGRESS BAR
+   Uses CSS scroll-driven animation — zero JS needed.
+───────────────────────────────────────────────────────────────────────────── */
+@supports (animation-timeline: scroll()) {
+  @keyframes scroll-progress {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-accent);
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 999;
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* Fallback for browsers without scroll-driven animations */
+@supports not (animation-timeline: scroll()) {
+  .scroll-progress-bar { display: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LAYOUT UTILITIES
+───────────────────────────────────────────────────────────────────────────── */
+.container-portfolio {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--section-px);
+}
+
+.section-padding {
+  padding-block: var(--section-py);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLL OFFSET
+   Fixed nav is 64px (h-16). Add 80px scroll-margin-top to every section so
+   anchor links (#about, #skills, etc.) land with content visible below the nav.
+───────────────────────────────────────────────────────────────────────────── */
+section[id] {
+  scroll-margin-top: 80px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TYPOGRAPHY UTILITIES
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Hero display name — fills viewport width, cinematic */
+.hero-name {
+  font-size: clamp(5rem, 13vw, 12rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  color: var(--color-text-primary);
+  font-feature-settings: 'ss01', 'ss02', 'cv01';
+}
+
+.text-display {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.text-h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.text-h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.text-h3 {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.text-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* Editorial section number — e.g. "01" in amber before section titles */
+.section-number {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LINK BASE
+───────────────────────────────────────────────────────────────────────────── */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress-bar {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GRID OVERLAY (dev helper — remove before deploy)
+   Uncomment to show layout grid:
+   html::before { content: ''; position: fixed; inset: 0;
+     background: repeating-linear-gradient(90deg,
+       rgba(255,0,0,.05) 0, rgba(255,0,0,.05) 1px,
+       transparent 0, transparent calc(100% / 12));
+     pointer-events: none; z-index: 9999; }
+───────────────────────────────────────────────────────────────────────────── */
+
+/* GSAP SplitType & WebGL Utilities */
+.clip-text-reveal {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+.word, .char {
+  display: inline-block;
+}
+
+/* Font Overrides */
+.text-display, .hero-name, h1, h2 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
